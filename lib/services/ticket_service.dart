@@ -1,1 +1,67 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../models/ticket_model.dart';
 
+class TicketService {
+  final SupabaseClient _client = Supabase.instance.client;
+
+  // Reading a ticket by ID
+  Future<TicketModel> getTicket(int ticketId) async {
+    try {
+      final response =
+          await _client.from('ticket').select('*').eq('id', ticketId).single();
+      return TicketModel.fromJson(response);
+    } catch (e) {
+      throw Exception('Failed to fetch ticket: $e');
+    }
+  }
+
+  // Reading all tickets
+  Future<List<TicketModel>> getAllTickets() async {
+    try {
+      final response = await _client.from('ticket').select('*');
+      print('Raw response: $response');
+      return (response as List<dynamic>)
+          .map((json) => TicketModel.fromJson(json))
+          .toList();
+    } catch (e) {
+      throw Exception('Failed to fetch tickets: $e');
+    }
+  }
+
+  // Inserting a new ticket
+  Future<void> insertTicket(TicketModel ticket) async {
+    try {
+      await _client.from('ticket').insert(ticket.toJson());
+    } catch (e) {
+      throw Exception('Failed to insert ticket: $e');
+    }
+  }
+
+  // Updating an existing ticket
+  Future<void> updateTicket(TicketModel ticket) async {
+    try {
+      await _client.from('ticket').update(ticket.toJson()).eq('id', ticket.id);
+    } catch (e) {
+      throw Exception('Failed to update ticket: $e');
+    }
+  }
+
+  // Deleting a ticket
+  Future<void> deleteTicket(int ticketId) async {
+    try {
+      await _client.from('ticket').delete().eq('id', ticketId);
+    } catch (e) {
+      throw Exception('Failed to delete ticket: $e');
+    }
+  }
+
+  // Real-time subscription for ticket changes
+  Stream<List<TicketModel>> subscribeToTickets() {
+    try {
+      return _client.from('ticket').stream(primaryKey: ['id']).map(
+          (data) => data.map(TicketModel.fromJson).toList());
+    } catch (e) {
+      throw Exception('Failed to subscribe to tickets: $e');
+    }
+  }
+}
