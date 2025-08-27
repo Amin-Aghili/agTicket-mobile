@@ -1,4 +1,5 @@
 import 'package:ag_ticket/core/constants.dart';
+import 'package:ag_ticket/features/events/events_screen.dart';
 import 'package:ag_ticket/features/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -21,7 +22,7 @@ class InitScreen extends StatelessWidget {
           ),
         ),
         PersistentTabConfig(
-          screen: Container(),
+          screen: EventsScreen(),
           item: ItemConfig(
             icon: FaIcon(FontAwesomeIcons.ticket),
             title: "Tickets",

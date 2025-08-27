@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 activeStyle: TextStyle(fontFamily: 'NotoSans', fontSize: 13),
                 backgroundColor: Colors.black12,
 
-                itemPadding: EdgeInsetsGeometry.symmetric(
+                itemPadding: EdgeInsets.symmetric(
                   vertical: 10,
                   horizontal: 200,
                 ),
