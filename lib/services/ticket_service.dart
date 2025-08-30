@@ -1,14 +1,15 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ag_ticket/main.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/ticket_model.dart';
 
 class TicketService {
-  final SupabaseClient _client = Supabase.instance.client;
+  // final SupabaseClient supabase = Supabase.instance.client;
 
   // Reading a ticket by ID
   Future<TicketModel> getTicket(int ticketId) async {
     try {
       final response =
-          await _client.from('ticket').select('*').eq('id', ticketId).single();
+          await supabase.from('ticket').select('*').eq('id', ticketId).single();
       return TicketModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to fetch ticket: $e');
@@ -18,7 +19,7 @@ class TicketService {
   // Reading all tickets
   Future<List<TicketModel>> getAllTickets() async {
     try {
-      final response = await _client.from('ticket').select('*');
+      final response = await supabase.from('ticket').select('*');
       print('Raw response: $response');
       return (response as List<dynamic>)
           .map((json) => TicketModel.fromJson(json))
@@ -31,7 +32,7 @@ class TicketService {
   // Inserting a new ticket
   Future<void> insertTicket(TicketModel ticket) async {
     try {
-      await _client.from('ticket').insert(ticket.toJson());
+      await supabase.from('ticket').insert(ticket.toJson());
     } catch (e) {
       throw Exception('Failed to insert ticket: $e');
     }
@@ -40,7 +41,7 @@ class TicketService {
   // Updating an existing ticket
   Future<void> updateTicket(TicketModel ticket) async {
     try {
-      await _client.from('ticket').update(ticket.toJson()).eq('id', ticket.id);
+      await supabase.from('ticket').update(ticket.toJson()).eq('id', ticket.id);
     } catch (e) {
       throw Exception('Failed to update ticket: $e');
     }
@@ -49,7 +50,7 @@ class TicketService {
   // Deleting a ticket
   Future<void> deleteTicket(int ticketId) async {
     try {
-      await _client.from('ticket').delete().eq('id', ticketId);
+      await supabase.from('ticket').delete().eq('id', ticketId);
     } catch (e) {
       throw Exception('Failed to delete ticket: $e');
     }
@@ -58,7 +59,7 @@ class TicketService {
   // Real-time subscription for ticket changes
   Stream<List<TicketModel>> subscribeToTickets() {
     try {
-      return _client.from('ticket').stream(primaryKey: ['id']).map(
+      return supabase.from('ticket').stream(primaryKey: ['id']).map(
           (data) => data.map(TicketModel.fromJson).toList());
     } catch (e) {
       throw Exception('Failed to subscribe to tickets: $e');

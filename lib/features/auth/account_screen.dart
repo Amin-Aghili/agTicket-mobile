@@ -4,14 +4,14 @@ import 'package:ag_ticket/main.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class AccountPage extends StatefulWidget {
-  const AccountPage({super.key});
+class AccountScreen extends StatefulWidget {
+  const AccountScreen({super.key});
 
   @override
-  State<AccountPage> createState() => _AccountPageState();
+  State<AccountScreen> createState() => _AccountScreenState();
 }
 
-class _AccountPageState extends State<AccountPage> {
+class _AccountScreenState extends State<AccountScreen> {
   final _usernameController = TextEditingController();
   final _websiteController = TextEditingController();
 
@@ -89,17 +89,19 @@ class _AccountPageState extends State<AccountPage> {
       }
     } finally {
       if (mounted) {
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       }
     }
   }
 
+  final userId = supabase.auth.currentUser!.id;
+
   /// Called when image has been uploaded to Supabase storage from within Avatar widget
   Future<void> _onUpload(String imageUrl) async {
     try {
-      final userId = supabase.auth.currentUser!.id;
+      // final userId = supabase.auth.currentUser!.id;
       await supabase.from('profiles').upsert({
         'id': userId,
         'avatar_url': imageUrl,
@@ -141,7 +143,7 @@ class _AccountPageState extends State<AccountPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(title: Text(userId)),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
         children: [

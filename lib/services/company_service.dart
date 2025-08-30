@@ -1,13 +1,14 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:ag_ticket/main.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/company_model.dart';
 
 class CompanyService {
-  final SupabaseClient _client = Supabase.instance.client;
+  // final SupabaseClient supabase = Supabase.instance.client;
 
   // Reading a company by ID
   Future<CompanyModel> getCompany(int companyId) async {
     try {
-      final response = await _client
+      final response = await supabase
           .from('company')
           .select('*')
           .eq('id', companyId)
@@ -21,7 +22,7 @@ class CompanyService {
   // Reading all companies
   Future<List<CompanyModel>> getAllCompanies() async {
     try {
-      final response = await _client.from('company').select('*');
+      final response = await supabase.from('company').select('*');
       print('Raw response: $response');
       return (response as List<dynamic>)
           .map((json) => CompanyModel.fromJson(json))
@@ -34,7 +35,7 @@ class CompanyService {
   // Inserting a new company
   Future<void> insertCompany(CompanyModel company) async {
     try {
-      await _client.from('company').insert(company.toJson());
+      await supabase.from('company').insert(company.toJson());
     } catch (e) {
       throw Exception('Failed to insert company: $e');
     }
@@ -43,7 +44,7 @@ class CompanyService {
   // Updating a company
   Future<void> updateCompany(CompanyModel company) async {
     try {
-      await _client
+      await supabase
           .from('company')
           .update(company.toJson())
           .eq('id', company.id);
@@ -55,7 +56,7 @@ class CompanyService {
   // Deleting a company
   Future<void> deleteCompany(int companyId) async {
     try {
-      await _client.from('company').delete().eq('id', companyId);
+      await supabase.from('company').delete().eq('id', companyId);
     } catch (e) {
       throw Exception('Failed to delete company: $e');
     }
@@ -64,7 +65,7 @@ class CompanyService {
   // Real-time subscription for company changes
   Stream<List<CompanyModel>> subscribeToCompanies() {
     try {
-      return _client.from('company').stream(primaryKey: ['id']).map(
+      return supabase.from('company').stream(primaryKey: ['id']).map(
           (data) => data.map(CompanyModel.fromJson).toList());
     } catch (e) {
       throw Exception('Failed to subscribe to companies: $e');

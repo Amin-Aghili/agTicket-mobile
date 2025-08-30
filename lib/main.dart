@@ -1,9 +1,16 @@
-// import 'package:ag_ticket/features/auth/login_screen.dart';
+import 'package:ag_ticket/features/auth/login_screen.dart';
+import 'package:ag_ticket/services/auth_service.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'features/init_screen.dart';
+
+const String supabaseUrl =
+    'https://zrrypgzzfovkbebsyzih.supabase.co'; // از Dashboard
+const String supabaseAnonKey =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpycnlwZ3p6Zm92a2JlYnN5emloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4Mjc3MDMsImV4cCI6MjA3MDQwMzcwM30.9eR3O4uBrBn5CPThrjYQIbpZ2LqvaXbVnskxH1lx8Yg';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,15 +25,17 @@ void main() async {
 
   // Supabase initialization
   await Supabase.initialize(
-    url: 'https://zrrypgzzfovkbebsyzih.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpycnlwZ3p6Zm92a2JlYnN5emloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4Mjc3MDMsImV4cCI6MjA3MDQwMzcwM30.9eR3O4uBrBn5CPThrjYQIbpZ2LqvaXbVnskxH1lx8Yg',
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
 
   runApp(const MyApp());
 }
 
 final supabase = Supabase.instance.client;
+final authService = AuthService(supabase);
+// final companyService = CompanyService(supabase);
+// final ticketService = TicketService(supabase);
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -39,10 +48,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const InitScreen(),
-      // home: supabase.auth.currentSession == null
-      //     ? const LoginScreen()
-      //     : const InitScreen(),
+      // home: const InitScreen(),
+      home: supabase.auth.currentSession == null
+          ? const LoginScreen()
+          : const InitScreen(),
     );
   }
 }

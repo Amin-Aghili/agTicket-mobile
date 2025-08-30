@@ -1,4 +1,5 @@
 import 'package:ag_ticket/core/constants.dart';
+import 'package:ag_ticket/features/auth/account_screen.dart';
 import 'package:ag_ticket/features/events/events_screen.dart';
 import 'package:ag_ticket/features/home/home_screen.dart';
 import 'package:ag_ticket/features/ticket/ticket_screen.dart';
@@ -50,7 +51,7 @@ class InitScreen extends StatelessWidget {
           ),
         ),
         PersistentTabConfig(
-          screen: Container(),
+          screen: AccountScreen(),
           item: ItemConfig(
             icon: FaIcon(FontAwesomeIcons.user),
             title: "Profile",

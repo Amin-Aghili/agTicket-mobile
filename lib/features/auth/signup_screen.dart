@@ -1,20 +1,15 @@
-import 'dart:io';
-
-import 'package:ag_ticket/features/auth/signup_screen.dart';
-import 'package:ag_ticket/features/init_screen.dart';
-import 'package:flutter/foundation.dart';
+import 'package:ag_ticket/features/auth/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -22,7 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _supabase = Supabase.instance.client;
 
-  Future<void> _signInWithPassword() async {
+  Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -30,12 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
     });
     try {
-      final response = await _supabase.auth.signInWithPassword(
+      final response = await _supabase.auth.signUp(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
       if (response.user != null) {
-        _navigateToHome();
+        _showSuccessDialog();
+      } else {
+        _showErrorDialog('Sign up failed. Please try again.');
       }
     } on AuthException catch (e) {
       _showErrorDialog(e.message);
@@ -50,59 +47,30 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Future<void> _signInWithGoogle() async {
-    setState(() {
-      _isLoading = true;
-    });
-    try {
-      const webClientId =
-          '569147759580-ov6i3gsb5irgn3latsb4t79gut4csu8r.apps.googleusercontent.com';
-      const iosClientId =
-          '569147759580-5t2qh6vf1uffanpoe3md7frocm1pf1ov.apps.googleusercontent.com';
-
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        clientId: kIsWeb ? webClientId : (Platform.isIOS ? iosClientId : null),
-        serverClientId: webClientId,
-      );
-
-      final googleUser = await googleSignIn.signIn();
-      final googleAuth = await googleUser!.authentication;
-      final accessToken = googleAuth.accessToken;
-      final idToken = googleAuth.idToken;
-
-      if (accessToken == null) {
-        throw 'No Access Token found.';
-      }
-      if (idToken == null) {
-        throw 'No ID Token found.';
-      }
-
-      final response = await _supabase.auth.signInWithIdToken(
-        provider: OAuthProvider.google,
-        idToken: idToken,
-        accessToken: accessToken,
-      );
-
-      if (response.user != null) {
-        _navigateToHome();
-      }
-    } on AuthException catch (e) {
-      _showErrorDialog(e.message);
-    } catch (e) {
-      _showErrorDialog('An unexpected error occurred: $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    }
-  }
-
-  void _navigateToHome() {
+  void _showSuccessDialog() {
     if (mounted) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const InitScreen()),
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Success'),
+            content:
+                const Text('Please check your email for a confirmation link.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
       );
     }
   }
@@ -137,7 +105,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(title: const Text('Sign Up')),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -163,7 +131,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   obscureText: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return 'Please enter a password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
                     }
                     return null;
                   },
@@ -173,22 +144,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   const CircularProgressIndicator()
                 else ...[
                   ElevatedButton(
-                    onPressed: _signInWithPassword,
-                    child: const Text('Login'),
-                  ),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: _signInWithGoogle,
-                    child: const Text('Sign in with Google'),
+                    onPressed: _signUp,
+                    child: const Text('Sign Up'),
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) => const SignUpScreen()),
-                      );
+                      Navigator.of(context).pop();
                     },
-                    child: const Text('Don\'t have an account? Sign up'),
+                    child: const Text('Already have an account? Log in'),
                   ),
                 ],
               ],
