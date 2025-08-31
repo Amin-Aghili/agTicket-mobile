@@ -1,11 +1,8 @@
-import 'dart:io';
-
-import 'package:ag_ticket/features/auth/signup_screen.dart';
-import 'package:ag_ticket/features/init_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '/features/auth/signup_screen.dart';
+import '/features/init_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -54,36 +51,20 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       _isLoading = true;
     });
+
     try {
-      const webClientId =
-          '569147759580-ov6i3gsb5irgn3latsb4t79gut4csu8r.apps.googleusercontent.com';
-      const iosClientId =
-          '569147759580-5t2qh6vf1uffanpoe3md7frocm1pf1ov.apps.googleusercontent.com';
+      final supabase = Supabase.instance.client;
 
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        clientId: kIsWeb ? webClientId : (Platform.isIOS ? iosClientId : null),
-        serverClientId: webClientId,
+      await supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'com.ag.agticket://login-callback',
+        // scopes: 'email profile', // optional
       );
 
-      final googleUser = await googleSignIn.signIn();
-      final googleAuth = await googleUser!.authentication;
-      final accessToken = googleAuth.accessToken;
-      final idToken = googleAuth.idToken;
+      final user = supabase.auth.currentUser;
+      final userId = user?.id;
 
-      if (accessToken == null) {
-        throw 'No Access Token found.';
-      }
-      if (idToken == null) {
-        throw 'No ID Token found.';
-      }
-
-      final response = await _supabase.auth.signInWithIdToken(
-        provider: OAuthProvider.google,
-        idToken: idToken,
-        accessToken: accessToken,
-      );
-
-      if (response.user != null) {
+      if (userId != null) {
         _navigateToHome();
       }
     } on AuthException catch (e) {

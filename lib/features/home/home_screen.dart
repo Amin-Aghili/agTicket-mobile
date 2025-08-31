@@ -1,6 +1,7 @@
 import 'package:ag_ticket/core/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_segment/flutter_advanced_segment.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'components/big_card.dart';
 import 'components/small_card.dart';
@@ -14,6 +15,17 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final _selectedSegment = ValueNotifier('all');
+
+  @override
+  void initState() {
+    final supabase = Supabase.instance.client;
+
+    // Don't delete these
+    final session = supabase.auth.currentSession;
+    final user = supabase.auth.currentUser;
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

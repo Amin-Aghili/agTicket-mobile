@@ -5,12 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'features/init_screen.dart';
-
-const String supabaseUrl =
-    'https://zrrypgzzfovkbebsyzih.supabase.co'; // از Dashboard
-const String supabaseAnonKey =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpycnlwZ3p6Zm92a2JlYnN5emloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4Mjc3MDMsImV4cCI6MjA3MDQwMzcwM30.9eR3O4uBrBn5CPThrjYQIbpZ2LqvaXbVnskxH1lx8Yg';
+import '/core/constants.dart';
+import '/features/init_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
