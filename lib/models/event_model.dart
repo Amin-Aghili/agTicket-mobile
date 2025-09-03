@@ -1,3 +1,6 @@
+import 'package:ag_ticket/utils/format.dart';
+import 'package:flutter/material.dart';
+
 class EventModel {
   final int id;
   final int companyId;
@@ -11,10 +14,11 @@ class EventModel {
   final int? minAge;
   final DateTime? startDate;
   final DateTime? endDate;
-  final String? startTime;
-  final String? endTime;
+  final TimeOfDay? startTime;
+  final TimeOfDay? endTime;
   final bool? isEveryDay;
   final DateTime createdAt;
+  final int? status;
 
   const EventModel({
     required this.id,
@@ -33,6 +37,7 @@ class EventModel {
     this.endTime,
     this.isEveryDay,
     required this.createdAt,
+    this.status,
   });
 
   factory EventModel.fromJson(Map<String, dynamic> json) {
@@ -52,10 +57,11 @@ class EventModel {
           : null,
       endDate:
           json['end_date'] != null ? DateTime.parse(json['end_date']) : null,
-      startTime: json['start_time'] as String?,
-      endTime: json['end_time'] as String?,
+      startTime: timeFromString(json['start_time'] as String?),
+      endTime: timeFromString(json['end_time'] as String?),
       isEveryDay: json['is_every_day'] as bool?,
       createdAt: DateTime.parse(json['created_at']),
+      status: json['status'] as int?,
     );
   }
 
@@ -73,10 +79,51 @@ class EventModel {
       'min_age': minAge,
       'start_date': startDate?.toIso8601String().split('T')[0],
       'end_date': endDate?.toIso8601String().split('T')[0],
-      'start_time': startTime,
-      'end_time': endTime,
+      'start_time': timeToString(startTime),
+      'end_time': timeToString(endTime),
       'is_every_day': isEveryDay,
       'created_at': createdAt.toIso8601String(),
+      'status': status,
     };
+  }
+
+  EventModel copyWith({
+    int? id,
+    int? companyId,
+    int? creatorUserId,
+    String? eventName,
+    int? eventTypeId,
+    String? location,
+    int? capacity,
+    int? price,
+    int? priceCurrencyId,
+    int? minAge,
+    DateTime? startDate,
+    DateTime? endDate,
+    TimeOfDay? startTime,
+    TimeOfDay? endTime,
+    bool? isEveryDay,
+    DateTime? createdAt,
+    int? status,
+  }) {
+    return EventModel(
+      id: id ?? this.id,
+      companyId: companyId ?? this.companyId,
+      creatorUserId: creatorUserId ?? this.creatorUserId,
+      eventName: eventName ?? this.eventName,
+      eventTypeId: eventTypeId ?? this.eventTypeId,
+      location: location ?? this.location,
+      capacity: capacity ?? this.capacity,
+      price: price ?? this.price,
+      priceCurrencyId: priceCurrencyId ?? this.priceCurrencyId,
+      minAge: minAge ?? this.minAge,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      isEveryDay: isEveryDay ?? this.isEveryDay,
+      createdAt: createdAt ?? this.createdAt,
+      status: status ?? this.status,
+    );
   }
 }
